@@ -131,7 +131,7 @@ $f->runFromGlobals();
 Router
 ------
 
- The router is the component which is used by *FrontController* to map, append and prepend pair of match to behaviour. It support the methods explained before in [*FrontController*](http://wildsurikat.com/Documentation/Route#frontcontroller) except *runFromGlobals*.
+ The router is the component which is used by *FrontController* to map, append and prepend pair of match to behaviour. It support the methods explained before in [*FrontController*](http://wildsurikat.com/route#frontcontroller) except *runFromGlobals*.
 
 Match
 -----
