@@ -6,17 +6,17 @@ Route your application's requests
 FrontController
 ---------------
 
- This is a basic [front-controller](https://en.wikipedia.org/wiki/Front_Controller_pattern) class which you can extends to build the front map of your application. It's build with a router that will solve the request. Is implementing the [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) interface and *runFromGlobals* method which is used in the generic surikat's *index.php*.  
+ This is a basic [front-controller](https://en.wikipedia.org/wiki/Front_Controller_pattern) class which you can extends to build the front map of your application. It's build with a router that will solve the request. Is implementing the [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) interface and *runFromGlobals* method which is used in the generic RedCat's *index.php*.  
  Extending:  
  
 ```php
-class MyFrontOffice extends \\Wild\\Route\\FrontOffice{  
+class MyFrontOffice extends \\RedCat\\Route\\FrontOffice{  
     function \_\_construct(Router $router,Di $di){  
         parent::\_\_construct($router,$di);  
         $this->map([  
-            ['backend/','new:Wild\\Plugin\\FrontController\\Backoffice'],  
-            [['new:Wild\\Route\\Match\\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\\Plugin\\FrontController\\Synaptic'],  
-            [['new:Wild\\Plugin\\RouteMatch\\ByTml'.($this->l10n?'L10n':''),'','template'],'new:Wild\\Plugin\\Templix\\Templix'.($this->l10n?'L10n':'')],  
+            ['backend/','new:RedCat\\Plugin\\FrontController\\Backoffice'],  
+            [['new:RedCat\\Route\\Match\\Extension','css|js|png|jpg|jpeg|gif'],'new:RedCat\\Plugin\\FrontController\\Synaptic'],  
+            [['new:RedCat\\Plugin\\RouteMatch\\ByTml'.($this->l10n?'L10n':''),'','template'],'new:RedCat\\Plugin\\Templix\\Templix'.($this->l10n?'L10n':'')],  
         ]);  
     }  
     function run($path,$domain=null){  
@@ -34,10 +34,10 @@ class MyFrontOffice extends \\Wild\\Route\\FrontOffice{
  And then, use it:  
  
 ```php
-use Wild\\Route\\Match\\Prefix;  
-use Wild\\Route\\Match\\Suffix;  
-use Wild\\Route\\Match\\Regex;  
-use Wild\\Route\\Match\\Extension;  
+use RedCat\\Route\\Match\\Prefix;  
+use RedCat\\Route\\Match\\Suffix;  
+use RedCat\\Route\\Match\\Regex;  
+use RedCat\\Route\\Match\\Extension;  
   
 $f = new MyFrontOffice();  
             
@@ -97,7 +97,7 @@ $f->append('',function(){
 Lazy loading *match*, array containing first element starting with "new:", the object will be instantiated only if is necessary (previous didn't match):   
  
 ```php
-$f->append(['new:Wild\\Route\\Match\\Suffix','.stuff'],function($path){  
+$f->append(['new:RedCat\\Route\\Match\\Suffix','.stuff'],function($path){  
     print "My url end with '.stuff' preceded by '$path'";  
 });  
             
@@ -131,12 +131,12 @@ $f->runFromGlobals();
 Router
 ------
 
- The router is the component which is used by *FrontController* to map, append and prepend pair of match to behaviour. It support the methods explained before in [*FrontController*](http://wildsurikat.com/route#frontcontroller) except *runFromGlobals*.
+ The router is the component which is used by *FrontController* to map, append and prepend pair of match to behaviour. It support the methods explained before in [*FrontController*](http://redcatphp.com/route#frontcontroller) except *runFromGlobals*.
 
 Match
 -----
 
- The basic match components are distributed under the *Wild\\Route\\Match* namespace but there is also some examples of specific match in the *Wild\\Plugin\\RouteMatch* namespace. The only rule to make a *Match* object is that he have to be callable implementing \_\_invoke magic method. You can also use php [Closure](http://php.net/manual/en/class.closure.php) also called [anonymous function](http://php.net/manual/en/functions.anonymous.php).
+ The basic match components are distributed under the *RedCat\\Route\\Match* namespace but there is also some examples of specific match in the *RedCat\\Plugin\\RouteMatch* namespace. The only rule to make a *Match* object is that he have to be callable implementing \_\_invoke magic method. You can also use php [Closure](http://php.net/manual/en/class.closure.php) also called [anonymous function](http://php.net/manual/en/functions.anonymous.php).
 
 Url
 ---
@@ -154,19 +154,19 @@ $url->getServerHref();
 \# output integer number of port if different from default (80 for http and 443 for https)  
 $url->getPortHref();  
   
-\# root-path-of-surikat/  
+\# root-path-of-redcat/  
 $url->getSuffixHref();  
   
-\# http://mydomain.com/root-path-of-surikat/  
+\# http://mydomain.com/root-path-of-redcat/  
 $url->getBaseHref();  
   
-\# http://mydomain.com/root-path-of-surikat/current-path/  
+\# http://mydomain.com/root-path-of-redcat/current-path/  
 $url->getLocation();  
   
-\# http://mydomain.com/root-path-of-surikat/  
+\# http://mydomain.com/root-path-of-redcat/  
 $url->getSubdomainHref();  
   
-\# http://fr.mydomain.com/root-path-of-surikat/  
+\# http://fr.mydomain.com/root-path-of-redcat/  
 $url->getSubdomainHref('fr');  
   
 \# if current subdomain contain 2 character it will output them  
