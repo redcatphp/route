@@ -10,6 +10,8 @@
  */
 namespace RedCat\Route;
 use RedCat\Wire\Di;
+use RedCat\Route\Match\Regex;
+use RedCat\Route\Match\Path;
 class Router implements \ArrayAccess{
 	private $routes = [];
 	private $route;
@@ -68,10 +70,10 @@ class Router implements \ArrayAccess{
 	private function matchType($match){
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
-				return ['new:RedCat\Route\Match\Regex',$match];
+				return ['new:'.Regex::class,$match];
 			}
 			else{
-				return ['new:RedCat\Route\Match\Prefix',$match];
+				return ['new:'.Path::class,$match];
 			}
 		}
 		return $match;
