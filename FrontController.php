@@ -17,6 +17,10 @@ class FrontController implements \ArrayAccess{
 	function prepend($match,$route,$index=0){
 		return $this->router->prepend($match,$route,$index);
 	}
+	function group($group=null,$callback=null,$prepend=false){
+		return $this->router->group($group,$callback,$prepend);
+	}
+	
 	function run($uri,$domain=null){
 		if($this->router->find($uri,$domain)){
 			$this->router->display();
