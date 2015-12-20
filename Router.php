@@ -14,57 +14,101 @@ use RedCat\Route\Match\Regex;
 use RedCat\Route\Match\Path;
 class Router implements \ArrayAccess{
 	private $routes = [];
+	private $groups = [];
+	private $groupKey;
 	private $route;
 	private $routeParams;
 	private $di;
-	private $index = 0;
+	private $index;
+	private $group;
 	function __construct(Di $di = null){
 		$this->di = $di;
+		$this->setGroup();
+		$this->setIndex();
 	}
-	function map($map,$index=null,$prepend=false){
+	function map($map,$index=null,$prepend=false,$group=null){
+		if(is_string($prepend)){
+			$tmp = $prepend;
+			if(is_bool($group))
+				$prepend = $group;
+			else
+				$prepend = false;
+			$group = $tmp;
+		}
 		foreach($map as list($match,$route)){
-			$this->route($match,$route,$index,$prepend);
+			$this->route($match,$route,$index,$group,$prepend);
 		}
 		return $this;
 	}
-	function append($match,$route,$index=null){
-		return $this->route($match,$route,$index);
+	function append($match,$route,$index=null,$group=null){
+		return $this->route($match,$route,$index,$group);
 	}
-	function prepend($match,$route,$index=null){
-		return $this->route($match,$route,$index,true);
+	function prepend($match,$route,$index=null,$group=null){
+		return $this->route($match,$route,$index,$group,true);
 	}
 	function find($uri,$server=null){
 		$uri = ltrim($uri,'/');
 		ksort($this->routes);
-		foreach($this->routes as $group){
-			foreach($group as list($match,$route)){
-				$routeParams = call_user_func($this->objectify($match),$uri,$server);
-				if($routeParams!==null){
-					$this->route = $route;
-					$this->routeParams = $routeParams;
-					return true;
+		foreach($this->routes as $groupKey=>$group){
+			foreach($group as $indexGroup){
+				foreach($indexGroup as list($match,$route)){
+					$routeParams = call_user_func($this->objectify($match),$uri,$server);
+					if($routeParams!==null){
+						$this->groupKey = $groupKey;
+						$this->route = $route;
+						$this->routeParams = $routeParams;
+						return true;
+					}
 				}
 			}
 		}
 	}
+	function group($group=null,$callback=null,$prepend=false){
+		if(is_null($group))
+			$group = $this->group;
+		if(!is_string($group)){
+			$callback = $group;
+			$group = $this->group;
+		}
+		if($prepend)
+			array_unshift($this->groups[$group],$callback);
+		else
+			$this->groups[$group][] = $callback;
+		
+	}
 	function display(){
 		$route = $this->route;
+		if(isset($this->groups[$this->groupKey])){
+			foreach($this->groups[$this->groupKey] as $call){
+				call_user_func($call,$this->routeParams,$route);
+			}
+		}
 		while(is_callable($route=$this->objectify($route))){
 			$route = call_user_func($route,$this->routeParams);
 		}
 	}
-	function route($match,$route,$index=null,$prepend=false,$subindex=null){
+	function route($match,$route,$index=null,$group=null,$prepend=false,$subindex=null){
+		if(is_string($index)){
+			$tmp = $index;
+			if(is_integer($group))
+				$index = $group;
+			else
+				$index = false;
+			$group = $tmp;
+		}
+		if(is_null($group))
+			$group = $this->group;
 		if(is_null($index))
 			$index = $this->index;
 		$pair = [$this->matchType($match),$route];
-		if(!isset($this->routes[$index]))
-			$this->routes[$index] = [];
+		if(!isset($this->routes[$group][$index]))
+			$this->routes[$group][$index] = [];
 		if(!is_null($subindex))
-			$this->routes[$index][$subindex] = $pair;
+			$this->routes[$group][$index][$subindex] = $pair;
 		elseif($prepend)
-			array_unshift($this->routes[$index],$pair);
+			array_unshift($this->routes[$group][$index],$pair);
 		else
-			$this->routes[$index][] = $pair;
+			$this->routes[$group][$index][] = $pair;
 		return $this;
 	}
 	private function matchType($match){
@@ -80,6 +124,9 @@ class Router implements \ArrayAccess{
 	}
 	function setIndex($index=0){
 		$this->index = $index;
+	}
+	function setGroup($group='default'){
+		$this->group = $group;
 	}
 	function objectify($a){
 		if($this->di)
@@ -106,18 +153,18 @@ class Router implements \ArrayAccess{
 	}
 	function offsetSet($k,$v){
 		list($match,$route) = $v;
-		$this->route($match,$route,$this->index,false,$k);
+		$this->route($match,$route,$this->index,null,false,$k);
 	}
 	function offsetGet($k){
-		if(!isset($this->routes[$this->index][$k]))
-			$this->routes[$this->index][$k] = [];
-		return $this->routes[$this->index][$k];
+		if(!isset($this->routes[$this->group][$this->index][$k]))
+			$this->routes[$this->group][$this->index][$k] = [];
+		return $this->routes[$this->group][$this->index][$k];
 	}
 	function offsetExists($k){
-		return isset($this->routes[$this->index][$k]);
+		return isset($this->routes[$this->group][$this->index][$k]);
 	}
 	function offsetUnset($k){
-		if(isset($this->routes[$this->index][$k]))
-			unset($this->routes[$this->index][$k]);
+		if(isset($this->routes[$this->group][$this->index][$k]))
+			unset($this->routes[$this->group][$this->index][$k]);
 	}
 }
