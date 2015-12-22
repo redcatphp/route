@@ -2,7 +2,7 @@
 namespace RedCat\Route;
 use RedCat\Wire\Di;
 class FrontController implements \ArrayAccess{
-	private $router;
+	protected $router;
 	protected $di;
 	function __construct(Router $router,Di $di=null){
 		$this->router = $router;
