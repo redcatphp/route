@@ -80,7 +80,8 @@ class Router implements \ArrayAccess{
 		$route = $this->route;
 		if(isset($this->groups[$this->groupKey])){
 			foreach($this->groups[$this->groupKey] as $call){
-				call_user_func($call,$this->routeParams,$route);
+				if(call_user_func($call,$this->routeParams,$route)===false)
+					return;
 			}
 		}
 		while(is_callable($route=$this->objectify($route))){
