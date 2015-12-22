@@ -49,16 +49,14 @@ class Router implements \ArrayAccess{
 	function find($uri,$server=null){
 		$uri = ltrim($uri,'/');
 		ksort($this->routes);
-		foreach($this->routes as $groupKey=>$group){
-			foreach($group as $indexGroup){
-				foreach($indexGroup as list($match,$route)){
-					$routeParams = call_user_func($this->objectify($match),$uri,$server);
-					if($routeParams!==null){
-						$this->groupKey = $groupKey;
-						$this->route = $route;
-						$this->routeParams = $routeParams;
-						return true;
-					}
+		foreach($this->routes as $routeGroup){
+			foreach($routeGroup as list($match,$route,$groupKey)){
+				$routeParams = call_user_func($this->objectify($match),$uri,$server);
+				if($routeParams!==null){
+					$this->groupKey = $groupKey;
+					$this->route = $route;
+					$this->routeParams = $routeParams;
+					return true;
 				}
 			}
 		}
@@ -101,15 +99,15 @@ class Router implements \ArrayAccess{
 			$group = $this->group;
 		if(is_null($index))
 			$index = $this->index;
-		$pair = [$this->matchType($match),$route];
-		if(!isset($this->routes[$group][$index]))
-			$this->routes[$group][$index] = [];
+		$pair = [$this->matchType($match),$route,$group];
+		if(!isset($this->routes[$index]))
+			$this->routes[$index] = [];
 		if(!is_null($subindex))
-			$this->routes[$group][$index][$subindex] = $pair;
+			$this->routes[$index][$subindex] = $pair;
 		elseif($prepend)
-			array_unshift($this->routes[$group][$index],$pair);
+			array_unshift($this->routes[$index],$pair);
 		else
-			$this->routes[$group][$index][] = $pair;
+			$this->routes[$index][] = $pair;
 		return $this;
 	}
 	private function matchType($match){
@@ -157,15 +155,15 @@ class Router implements \ArrayAccess{
 		$this->route($match,$route,$this->index,null,false,$k);
 	}
 	function offsetGet($k){
-		if(!isset($this->routes[$this->group][$this->index][$k]))
-			$this->routes[$this->group][$this->index][$k] = [];
-		return $this->routes[$this->group][$this->index][$k];
+		if(!isset($this->routes[$this->index][$k]))
+			$this->routes[$this->index][$k] = [];
+		return $this->routes[$this->index][$k];
 	}
 	function offsetExists($k){
-		return isset($this->routes[$this->group][$this->index][$k]);
+		return isset($this->routes[$this->index][$k]);
 	}
 	function offsetUnset($k){
-		if(isset($this->routes[$this->group][$this->index][$k]))
-			unset($this->routes[$this->group][$this->index][$k]);
+		if(isset($this->routes[$this->index][$k]))
+			unset($this->routes[$this->index][$k]);
 	}
 }
