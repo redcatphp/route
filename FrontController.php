@@ -8,6 +8,15 @@ class FrontController implements \ArrayAccess{
 		$this->router = $router;
 		$this->di = $di;
 	}
+	function getRoutes(){
+		return $this->router->getRoutes();
+	}
+	function getGroups(){
+		return $this->router->getGroups();
+	}
+	function find($uri,$server=null){
+		return $this->router->find($uri,$server);
+	}
 	function map($map,$index=0,$prepend=false,$group=null){
 		return $this->router->map($map,$index,$prepend,$group);
 	}

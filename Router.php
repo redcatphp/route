@@ -26,6 +26,12 @@ class Router implements \ArrayAccess{
 		$this->setGroup();
 		$this->setIndex();
 	}
+	function getRoutes(){
+		return $this->routes;
+	}
+	function getGroups(){
+		return $this->groups;
+	}
 	function map($map,$index=null,$prepend=false,$group=null){
 		if(is_string($prepend)){
 			$tmp = $prepend;
