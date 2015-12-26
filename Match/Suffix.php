@@ -1,10 +1,7 @@
 <?php
 namespace RedCat\Route\Match;
-class Suffix{
-	private $match;
-	function __construct($match){
-		$this->match = $match;
-	}
+use RedCat\Route\Match;
+class Suffix extends Match{
 	function __invoke($uri){
 		$match = ltrim($this->match,'/');
 		if(empty($match)){

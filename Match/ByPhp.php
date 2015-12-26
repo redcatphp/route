@@ -1,6 +1,7 @@
 <?php
 namespace RedCat\Route\Match;
-class ByPhp{
+use RedCat\Route\MatchInterface;
+class ByPhp implements MatchInterface{
 	protected $dir = '';
 	protected $dirFS = '';
 	protected $dirs = [''];
@@ -11,6 +12,9 @@ class ByPhp{
 			$this->dir = $dir;
 			$this->dirFS = $dirFS;
 		}
+	}
+	function getMatch(){
+		return [$this->dir=>$this->dirFS];
 	}
 	function __invoke($uri){
 		if($this->dir&&strpos($uri,$this->dir)!==0)

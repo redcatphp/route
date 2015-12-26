@@ -1,10 +1,7 @@
 <?php
 namespace RedCat\Route\Match;
-class Path{
-	private $match;
-	function __construct($match){
-		$this->match = $match;
-	}
+use RedCat\Route\Match;
+class Path extends Match{
 	function __invoke($uri){
 		$match = ltrim($this->match,'/');
 		if(empty($match)){

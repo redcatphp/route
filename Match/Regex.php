@@ -1,10 +1,7 @@
 <?php
 namespace RedCat\Route\Match;
-class Regex{
-	private $match;
-	function __construct($match){
-		$this->match = $match;
-	}
+use RedCat\Route\Match;
+class Regex extends Match{
 	function __invoke($uri){
 		if(preg_match($this->match, $uri, $params)){
 			array_shift($params);
