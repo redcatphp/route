@@ -9,7 +9,7 @@
  * @website http://redcatphp.com
  */
 namespace RedCat\Route;
-use RedCat\Wire\Di;
+use RedCat\Ding\Di;
 use RedCat\Route\Match\Regex;
 use RedCat\Route\Match\Path;
 class Router implements \ArrayAccess{
