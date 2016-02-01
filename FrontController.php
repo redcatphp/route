@@ -17,14 +17,14 @@ class FrontController implements \ArrayAccess{
 	function find($uri,$server=null){
 		return $this->router->find($uri,$server);
 	}
-	function map($map,$index=0,$prepend=false,$group=null){
-		return $this->router->map($map,$index,$prepend,$group);
+	function map($map,$index=0,$prepend=false,$group=null,$continue=false){
+		return $this->router->map($map,$index,$prepend,$group,$continue);
 	}
-	function append($match,$route,$index=0,$group=null){
-		return $this->router->append($match,$route,$index,$group);
+	function append($match,$route,$index=0,$group=null,$continue=false){
+		return $this->router->append($match,$route,$index,$group,$continue);
 	}
-	function prepend($match,$route,$index=0,$group=null){
-		return $this->router->prepend($match,$route,$index,$group);
+	function prepend($match,$route,$index=0,$group=null,$continue=false){
+		return $this->router->prepend($match,$route,$index,$group,$continue);
 	}
 	function group($group=null,$callback=null,$prepend=false){
 		return $this->router->group($group,$callback,$prepend);

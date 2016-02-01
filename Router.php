@@ -3,7 +3,7 @@
  * Router - A mirco-framework for manage entry point of applications
  *
  * @package Router
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/redcatphp/Router/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
@@ -16,6 +16,8 @@ class Router implements \ArrayAccess{
 	private $routes = [];
 	private $groups = [];
 	private $groupKey;
+	private $continue;
+	private $found;
 	private $route;
 	private $routeParams;
 	private $di;
@@ -32,7 +34,7 @@ class Router implements \ArrayAccess{
 	function getGroups(){
 		return $this->groups;
 	}
-	function map($map,$index=null,$prepend=false,$group=null){
+	function map($map,$index=null,$prepend=false,$group=null,$continue=false){
 		if(is_string($prepend)){
 			$tmp = $prepend;
 			if(is_bool($group))
@@ -42,27 +44,32 @@ class Router implements \ArrayAccess{
 			$group = $tmp;
 		}
 		foreach($map as list($match,$route)){
-			$this->route($match,$route,$index,$group,$prepend);
+			$this->route($match,$route,$index,$group,$continue,$prepend);
 		}
 		return $this;
 	}
-	function append($match,$route,$index=null,$group=null){
-		return $this->route($match,$route,$index,$group);
+	function append($match,$route,$index=null,$group=null,$continue=false){
+		return $this->route($match,$route,$index,$group,$continue);
 	}
-	function prepend($match,$route,$index=null,$group=null){
-		return $this->route($match,$route,$index,$group,true);
+	function prepend($match,$route,$index=null,$group=null,$continue=false){
+		return $this->route($match,$route,$index,$group,$continue,true);
 	}
 	function find($uri,$server=null){
 		$uri = ltrim($uri,'/');
 		ksort($this->routes);
 		foreach($this->routes as $routeGroup){
-			foreach($routeGroup as list($match,$route,$groupKey)){
+			foreach($routeGroup as list($match,$route,$groupKey,$continue)){
 				$routeParams = call_user_func($this->objectify($match),$uri,$server);
 				if($routeParams!==null){
 					$this->groupKey = $groupKey;
 					$this->route = $route;
 					$this->routeParams = $routeParams;
-					return true;
+					if($continue){
+						$this->execute();
+					}
+					else{
+						return true;
+					}
 				}
 			}
 		}
@@ -80,7 +87,7 @@ class Router implements \ArrayAccess{
 			$this->groups[$group][] = $callback;
 		
 	}
-	function display(){
+	protected function execute(){
 		$route = $this->route;
 		if(isset($this->groups[$this->groupKey])){
 			foreach($this->groups[$this->groupKey] as $call){
@@ -92,20 +99,33 @@ class Router implements \ArrayAccess{
 			$route = call_user_func($route,$this->routeParams);
 		}
 	}
-	function route($match,$route,$index=null,$group=null,$prepend=false,$subindex=null){
+	function display(){
+		$this->execute();
+	}
+	function route($match,$route,$index=null,$group=null,$continue=false,$prepend=false,$subindex=null){
 		if(is_string($index)){
 			$tmp = $index;
 			if(is_integer($group))
 				$index = $group;
 			else
 				$index = false;
+			if(is_bool($group))
+				$continue = $group;
 			$group = $tmp;
+		}
+		elseif(is_bool($index)){
+			$continue = $index;
+			$index = null;
+		}
+		elseif(is_bool($group)){
+			$continue = $group;
+			$group = null;
 		}
 		if(is_null($group))
 			$group = $this->group;
 		if(is_null($index))
-			$index = $this->index;
-		$pair = [$this->matchType($match),$route,$group];
+			$index = $continue?$this->index-100:$this->index;
+		$pair = [$this->matchType($match),$route,$group,$continue];
 		if(!isset($this->routes[$index]))
 			$this->routes[$index] = [];
 		if(!is_null($subindex))
@@ -158,7 +178,7 @@ class Router implements \ArrayAccess{
 	}
 	function offsetSet($k,$v){
 		list($match,$route) = $v;
-		$this->route($match,$route,$this->index,null,false,$k);
+		$this->route($match,$route,$this->index,null,false,false,$k);
 	}
 	function offsetGet($k){
 		if(!isset($this->routes[$this->index][$k]))
