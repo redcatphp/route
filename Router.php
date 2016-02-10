@@ -59,7 +59,7 @@ class Router implements \ArrayAccess{
 		ksort($this->routes);
 		foreach($this->routes as $routeGroup){
 			foreach($routeGroup as list($match,$route,$groupKey,$continue)){
-				$routeParams = call_user_func($this->objectify($match),$uri,$server);
+				$routeParams = call_user_func_array($this->objectify($match),[&$uri,&$server]);
 				if($routeParams!==null){
 					$this->groupKey = $groupKey;
 					$this->route = $route;
