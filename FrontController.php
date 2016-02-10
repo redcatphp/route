@@ -20,10 +20,10 @@ class FrontController implements \ArrayAccess{
 	function map($map,$index=0,$prepend=false,$group=null,$continue=false){
 		return $this->router->map($map,$index,$prepend,$group,$continue);
 	}
-	function append($match,$route,$index=0,$group=null,$continue=false){
+	function append($match,$route=null,$index=0,$group=null,$continue=false){
 		return $this->router->append($match,$route,$index,$group,$continue);
 	}
-	function prepend($match,$route,$index=0,$group=null,$continue=false){
+	function prepend($match,$route=null,$index=0,$group=null,$continue=false){
 		return $this->router->prepend($match,$route,$index,$group,$continue);
 	}
 	function group($group=null,$callback=null,$prepend=false){
