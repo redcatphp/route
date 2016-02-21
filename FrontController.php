@@ -3,9 +3,11 @@ namespace RedCat\Route;
 use RedCat\Ding\Di;
 class FrontController implements \ArrayAccess{
 	protected $router;
+	protected $request;
 	protected $di;
-	function __construct(Router $router,Di $di=null){
+	function __construct(Router $router, Request $request, Di $di=null){
 		$this->router = $router;
+		$this->request = $request;
 		$this->di = $di;
 	}
 	function getRoutes(){
