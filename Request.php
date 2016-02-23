@@ -42,7 +42,7 @@ class Request implements \ArrayAccess,\Countable{
 	function getArray(){
 		return (array)$this->data;
 	}
-	function getDotOffset($param){
+	function dot($param){
 		$param = explode('.',$param);
 		$k = array_shift($param);
 		if(!isset($this->data[$k]))
