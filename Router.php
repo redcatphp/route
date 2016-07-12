@@ -16,7 +16,6 @@ class Router implements \ArrayAccess{
 	private $routes = [];
 	private $groups = [];
 	private $groupKey;
-	private $found;
 	private $route;
 	private $routeParams;
 	private $di;
