@@ -3,7 +3,7 @@
  * Router - A mirco-framework for manage entry point of applications
  *
  * @package Router
- * @version 1.4
+ * @version 1.6
  * @link http://github.com/redcatphp/Router/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
