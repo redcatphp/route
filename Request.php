@@ -1,14 +1,21 @@
 <?php
 namespace RedCat\Route;
-class Request implements \ArrayAccess,\Countable{
+class Request implements \ArrayAccess,\Iterator,\Countable,\JsonSerializable{
 	protected $data;
 	function __construct($data=null,$emptyStringAsNull=true,$trim=true){
 		if(!isset($data))
 			$data = $_REQUEST;
+		
 		$this->data = $data;
 		
 		if($trim) $this->data = self::trim($this->data);
 		if($emptyStringAsNull) $this->data = self::emptyStringAsNull($this->data);
+		
+		foreach($this->data as $k=>$v){
+			if(is_array($v)){
+				$this->data[$k] = new static($v);
+			}
+		}
 	}
 	function __get($k){
 		return isset($this->data[$k])?$this->data[$k]:null;
@@ -36,11 +43,37 @@ class Request implements \ArrayAccess,\Countable{
 		if(isset($this->data[$k]))
 			unset($this->data[$k]);
 	}
+	function rewind(){
+		reset($this->data);
+	}
+	function current(){
+		return current($this->data);
+	}
+	function key(){
+		return key($this->data);
+	}
+	function next(){
+		return next($this->data);
+	}
+	function valid(){
+		return key($this->data)!==null;
+	}
 	function count(){
 		return count($this->data);
 	}
+	function jsonSerialize(){
+		$data = [];
+		foreach($this as $k=>$v){
+			$data[$k] = $v;
+		}
+		return $data;
+	}
 	function getArray(){
-		return (array)$this->data;
+		$data = [];
+		foreach($this as $k=>$v){
+			$data[$k] = $v instanceof Request?$v->getArray():$v;
+		}
+		return $data;
 	}
 	function dot($param){
 		$param = explode('.',$param);
