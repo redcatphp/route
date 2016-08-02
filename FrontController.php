@@ -5,6 +5,7 @@ class FrontController implements \ArrayAccess{
 	protected $router;
 	protected $request;
 	protected $di;
+	protected $uri;
 	function __construct(Router $router, Request $request, Di $di=null){
 		$this->router = $router;
 		$this->request = $request;
@@ -31,8 +32,11 @@ class FrontController implements \ArrayAccess{
 	function group($group=null,$callback=null,$prepend=false){
 		return $this->router->group($group,$callback,$prepend);
 	}
-	
+	function getUri(){
+		return $this->uri;
+	}
 	function run($uri,$domain=null){
+		$this->uri = $uri;
 		if($this->router->find($uri,$domain)){
 			$this->router->display();
 			return true;
