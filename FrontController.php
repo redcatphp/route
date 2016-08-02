@@ -36,6 +36,7 @@ class FrontController implements \ArrayAccess{
 		return $this->uri;
 	}
 	function run($uri,$domain=null){
+		$uri = ltrim($uri,'/');
 		$this->uri = $uri;
 		if($this->router->find($uri,$domain)){
 			$this->router->display();
