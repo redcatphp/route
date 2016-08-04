@@ -1,21 +1,43 @@
 <?php
 namespace RedCat\Route;
-static class SilentProcess{
-	static function register($callback, $debug=false){
-		if($debug){
-			register_shutdown_function($callback);
-			return;
-		}
-		
+class SilentProcess{
+	protected $debug;
+	protected $stack = [];
+	function __construct($debug = false){
+		$this->debug = $debug;
+		register_shutdown_function($this);
 		header("Content-Encoding: none");
 		header("Connection: close");
-		register_shutdown_function(function()use($callback){			
+	}
+	function debug($debug = true){
+		$this->debug = $debug;
+	}
+	function register($callback, $key = null){
+		if($key){
+			$this->stack[$key] = $callback;
+		}
+		else{
+			$this->stack[] = $callback;
+		}
+	}
+	function unregister($callback, $key = null){
+		if(is_null($key)){
+			$key = array_search($callback, $this->stack, true);
+		}
+		if($key!==false&&isset($this->stack[$key])){
+			unset($this->stack[$key]);
+		}
+	}
+	function __invoke(){		
+		if(!$this->debug){
 			$size = ob_get_length();
 			header("Content-Length: {$size}");
 			ob_end_flush();
 			ob_flush();
 			flush();
+		}
+		foreach($this->stack as $callback){
 			call_user_func($callback);
-		});
+		}
 	}
 }
