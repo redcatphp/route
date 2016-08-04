@@ -1,7 +1,7 @@
 <?php
 namespace RedCat\Route;
 static class SilentProcess{
-	private static function register($callback, $debug=false){
+	static function register($callback, $debug=false){
 		if($debug){
 			register_shutdown_function($callback);
 			return;
