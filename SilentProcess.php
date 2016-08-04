@@ -3,8 +3,10 @@ namespace RedCat\Route;
 class SilentProcess{
 	protected $debug;
 	protected $stack = [];
+	protected $cwd;
 	function __construct($debug = false){
 		$this->debug = $debug;
+		$this->cwd = getcwd();
 		register_shutdown_function($this);
 		header("Content-Encoding: none");
 		header("Connection: close");
@@ -36,6 +38,7 @@ class SilentProcess{
 			ob_flush();
 			flush();
 		}
+		chdir($this->cwd);
 		foreach($this->stack as $callback){
 			call_user_func($callback);
 		}
