@@ -35,7 +35,9 @@ class SilentProcess{
 			$size = ob_get_length();
 			header("Content-Length: {$size}");
 			ob_end_flush();
-			ob_flush();
+			if(ob_get_length()){
+				ob_flush();
+			}
 			flush();
 		}
 		chdir($this->cwd);
