@@ -2,11 +2,13 @@
 namespace RedCat\Route;
 class Request implements \ArrayAccess,\Iterator,\Countable,\JsonSerializable{
 	protected $data;
-	function __construct($data=null,$emptyStringAsNull=true,$trim=true){
+	protected $server;
+	function __construct($data=null,$emptyStringAsNull=true,$trim=true,$server=null){
 		if(!isset($data))
 			$data = $_REQUEST;
 		
 		$this->data = $data;
+		$this->server = $server?$server:$_SERVER;
 		
 		if($trim) $this->data = self::trim($this->data);
 		if($emptyStringAsNull) $this->data = self::emptyStringAsNull($this->data);
@@ -111,6 +113,9 @@ class Request implements \ArrayAccess,\Iterator,\Countable,\JsonSerializable{
 				return $this(func_get_args());
 			break;
 		}
+	}
+	function post(){
+		return $this->server['REQUEST_METHOD']=='POST';
 	}
 	static function trim($str){
 		if(is_array($str))
