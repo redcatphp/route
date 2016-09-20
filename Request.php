@@ -114,6 +114,11 @@ class Request implements \ArrayAccess,\Iterator,\Countable,\JsonSerializable{
 			break;
 		}
 	}
+	function &iterate(){
+        foreach($this->data as &$v){
+            yield $v;
+        }
+    }
 	function post(){
 		return $this->server['REQUEST_METHOD']=='POST';
 	}
