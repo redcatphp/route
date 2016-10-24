@@ -1,6 +1,6 @@
 <?php
 namespace RedCat\Route;
-use RedCat\Ding\Di;
+use RedCat\Strategy\Di;
 class FrontController implements \ArrayAccess{
 	protected $router;
 	protected $request;
