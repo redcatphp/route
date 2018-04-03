@@ -4,10 +4,10 @@ class SilentProcess{
 	protected $debug;
 	protected $stack = [];
 	protected $cwd;
+	protected $registred = false;
 	function __construct($debug = false){
 		$this->debug = $debug;
 		$this->cwd = getcwd();
-		register_shutdown_function($this);
 		header("Content-Encoding: none");
 		header("Connection: close");
 	}
@@ -15,6 +15,10 @@ class SilentProcess{
 		$this->debug = $debug;
 	}
 	function register($callback, $key = null){
+		if(!$this->registred){
+			$this->registred = true;
+			register_shutdown_function($this);
+		}
 		if($key){
 			$this->stack[$key] = $callback;
 		}
@@ -31,7 +35,7 @@ class SilentProcess{
 		}
 	}
 	function __invoke(){		
-		if(!$this->debug){
+		if(!$this->debug && !headers_sent()){
 			$size = ob_get_length();
 			header("Content-Length: {$size}");
 			ob_end_flush();
